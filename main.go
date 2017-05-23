@@ -36,10 +36,11 @@ func main() {
 type Connection struct {
 	logger     *log.Entry
 	conn       *websocket.Conn
-	isTraining bool
 	done       chan struct{}
 	messages   chan Message
 	heartBeat  chan string
+	isTraining bool
+	snake      Snake
 }
 
 type Message struct {
@@ -67,7 +68,8 @@ func (c *Connection) Start(host string, port string, venue string) {
 	c.connect(host, port, venue)
 	c.messages = make(chan Message, 1)
 
-	c.conn.WriteJSON(RegisterPlayerMessage("go-snake"))
+	c.snake = GetSnake()
+	c.conn.WriteJSON(RegisterPlayerMessage(c.snake.Name))
 	c.conn.WriteJSON(ClientInfoMessage())
 	go c.readMessages()
 
@@ -143,10 +145,11 @@ func (c *Connection) routeMessage(msg Message) {
 	case GAME_STARTING:
 		var m GameStarting
 		c.messageToJson(&m, msg.bytes)
+		c.snake.OnGameStarting()
 	case MAP_UPDATE:
 		var m MapUpdate
 		c.messageToJson(&m, msg.bytes)
-		move := "DOWN"
+		move := c.snake.GetNextMove(m.Map)
 		c.logger.WithFields(log.Fields{
 			"move": move,
 		}).Debug("Registering move to client")
@@ -157,9 +160,11 @@ func (c *Connection) routeMessage(msg Message) {
 	case SNAKE_DEAD:
 		var m SnakeDead
 		c.messageToJson(&m, msg.bytes)
+		c.snake.OnSnakeDead(m.DeathReason)
 	case INVALID_PLAYER_NAME:
 		var m InvalidPlayerName
 		c.messageToJson(&m, msg.bytes)
+		c.snake.OnInvalidPlayername(m.ReasonCode)
 	case HEART_BEAT_RESPONSE:
 		// do nothing
 	case GAME_ENDED:
