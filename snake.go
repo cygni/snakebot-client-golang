@@ -20,7 +20,7 @@ func (snake Snake) OnGameStarting() {
 	log.Debug("All snakes are ready to rock. Game is starting.")
 }
 
-func (snake Snake) OnInvalidPlayername(reasonCode int32) {
+func (snake Snake) OnInvalidPlayername(reasonCode int) {
 	log.Debug("Player name is invalid.")
 }
 
