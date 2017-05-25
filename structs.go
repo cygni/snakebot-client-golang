@@ -1,5 +1,9 @@
 package main
 
+type TypedMessage struct {
+	Type string `json:"type"`
+}
+
 // Outbound
 type RegisterPlayer struct {
 	Type       string `json:"type"`
@@ -53,7 +57,6 @@ type GameSettings struct {
 
 // Inbound
 type PlayerRegistered struct {
-	Type              string       `json:"type"`
 	GameId            string       `json:"gameId"`
 	GameMode          string       `json:"gameMode"`
 	ReceivingPlayerId string       `json:"receivingPlayerId"`
@@ -62,7 +65,6 @@ type PlayerRegistered struct {
 }
 
 type MapUpdate struct {
-	Type              string `json:"type"`
 	ReceivingPlayerId string `json:"receivingPlayerId"`
 	GameId            string `json:"gameId"`
 	GameTick          int32  `json:"gameTick"`
@@ -70,12 +72,10 @@ type MapUpdate struct {
 }
 
 type InvalidPlayerName struct {
-	Type       string `json:"type"`
-	ReasonCode int32  `json:"reasonCode"`
+	ReasonCode int32 `json:"reasonCode"`
 }
 
 type GameEnded struct {
-	Type              string `json:"type"`
 	ReceivingPlayerId string `json:"receivingPlayerId"`
 	PlayerWinnerId    string `json:"playerWinnerId"`
 	GameId            string `json:"gameId"`
@@ -84,7 +84,6 @@ type GameEnded struct {
 }
 
 type SnakeDead struct {
-	Type        string `json:"type"`
 	PlayerId    string `json:"playerId"`
 	X           int32  `json:"x"`
 	Y           int32  `json:"y"`
@@ -94,7 +93,6 @@ type SnakeDead struct {
 }
 
 type GameStarting struct {
-	Type              string `json:"type"`
 	ReceivingPlayerId string `json:"receivingPlayerId"`
 	GameId            string `json:"gameId"`
 	NoofPlayers       int32  `json:"noofPlayers"`
@@ -103,19 +101,16 @@ type GameStarting struct {
 }
 
 type HeartBeatResponse struct {
-	Type              string `json:"type"`
 	ReceivingPlayerId string `json:"receivingPlayerId"`
 }
 
 type GameLink struct {
-	Type              string `json:"type"`
 	ReceivingPlayerId string `json:"receivingPlayerId"`
 	GameId            string `json:"gameId"`
 	Url               string `json:"url"`
 }
 
 type TournamentEnded struct {
-	Type              string       `json:"type"`
 	ReceivingPlayerId string       `json:"receivingPlayerId"`
 	TournamentId      string       `json:"tournamentId"`
 	TournamentName    string       `json:"tournamentName"`
@@ -125,7 +120,6 @@ type TournamentEnded struct {
 }
 
 type GameResult struct {
-	Type              string       `json:"type"`
 	GameId            string       `json:"gameId"`
 	ReceivingPlayerId string       `json:"receivingPlayerId"`
 	PlayerRanks       []PlayerRank `json:"playerRanks"`
@@ -140,7 +134,6 @@ type PlayerRank struct {
 }
 
 type Map struct {
-	Type              string      `json:"type"`
 	Width             int32       `json:"width"`
 	Height            int32       `json:"height"`
 	WorldTick         int32       `json:"worldTick"`
@@ -150,7 +143,6 @@ type Map struct {
 }
 
 type SnakeInfo struct {
-	Type                      string  `json:"type"`
 	Name                      string  `json:"name"`
 	Points                    int32   `json:"points"`
 	Positions                 []int32 `json:"positions"`

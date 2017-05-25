@@ -21,7 +21,7 @@ func (snake Snake) OnGameStarting() {
 }
 
 func (snake Snake) OnInvalidPlayername(reasonCode int32) {
-	log.WithField("reasonCode", reasonCode).Debug("Player name is invalid.")
+	log.Debug("Player name is invalid.")
 }
 
 func GetSnake() Snake {

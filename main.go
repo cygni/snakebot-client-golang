@@ -3,12 +3,15 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/hokaccha/go-prettyjson"
 	log "github.com/sirupsen/logrus"
 	prefixed "github.com/x-cray/logrus-prefixed-formatter"
 	"gopkg.in/alecthomas/kingpin.v2"
 	"net/url"
+	"os"
+	"text/tabwriter"
 	"time"
 )
 
@@ -107,8 +110,8 @@ func (c Connection) nextMessage() *Message {
 		return nil
 	}
 
-	var f interface{}
-	err = json.Unmarshal(bytes, &f)
+	var msg TypedMessage
+	err = json.Unmarshal(bytes, &msg)
 	if err != nil {
 		c.logger.WithError(err).WithFields(log.Fields{
 			"msg": string(bytes),
@@ -116,10 +119,13 @@ func (c Connection) nextMessage() *Message {
 		return nil
 	}
 
-	m := f.(map[string]interface{})
+	if msg.Type == "" {
+		c.logger.WithField("msg", string(bytes)).Error("No type for message!")
+		return nil
+	}
 
 	return &Message{
-		t:     m["type"],
+		t:     msg.Type,
 		bytes: bytes,
 	}
 
@@ -157,6 +163,8 @@ func (c *Connection) routeMessage(msg Message) {
 	case GAME_RESULT_EVENT:
 		var m GameResult
 		c.messageToJson(&m, msg.bytes)
+		c.logger.Info("Received game result, printing player ranks.")
+		LogFinalScore(m)
 	case SNAKE_DEAD:
 		var m SnakeDead
 		c.messageToJson(&m, msg.bytes)
@@ -221,4 +229,18 @@ func (c Connection) close() {
 	defer c.conn.Close()
 	c.conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 	close(c.done)
+}
+
+func LogFinalScore(result GameResult) {
+	w := new(tabwriter.Writer)
+	w.Init(os.Stdout, 5, 0, 1, ' ', tabwriter.AlignRight)
+
+	for _, player := range result.PlayerRanks {
+		alive := "dead"
+		if player.Alive {
+			alive = "alive"
+		}
+		fmt.Fprintf(w, "%d.\t%d pts \t%s \t(%s)\n", player.Rank, player.Points, player.PlayerName, alive)
+	}
+	w.Flush()
 }
