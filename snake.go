@@ -5,11 +5,17 @@ import (
 )
 
 type Snake struct {
-	Name string
+	Name         string
+	GameSettings GameSettings
 }
 
 func (snake Snake) GetNextMove(m Map) string {
 	return "DOWN"
+}
+
+func (snake Snake) OnPlayerRegistered(s GameSettings) {
+	snake.GameSettings = s
+	log.Debug("Player registered.")
 }
 
 func (snake Snake) OnSnakeDead(reason string) {
