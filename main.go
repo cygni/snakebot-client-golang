@@ -136,7 +136,7 @@ func (c *Connection) routeMessage(msg Message) {
 	case PLAYER_REGISTERED:
 		var m PlayerRegistered
 		c.messageToJson(&m, msg.bytes)
-		c.snake.OnPlayerRegistered(m.GameSettings)
+		c.snake.OnPlayerRegistered(m.GameSettings, m.ReceivingPlayerId)		
 		c.conn.WriteJSON(StartGameMessage())
 
 		c.isTraining = m.GameMode == "TRAINING"

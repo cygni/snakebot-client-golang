@@ -7,14 +7,16 @@ import (
 type Snake struct {
 	Name         string
 	GameSettings GameSettings
+	ID           string
 }
 
 func (snake Snake) GetNextMove(m Map) string {
 	return "DOWN"
 }
 
-func (snake Snake) OnPlayerRegistered(s GameSettings) {
+func (snake Snake) OnPlayerRegistered(s GameSettings, snakeID string) {
 	snake.GameSettings = s
+	snake.ID = snakeID
 	log.Debug("Player registered.")
 }
 
@@ -33,5 +35,6 @@ func (snake Snake) OnInvalidPlayername(reasonCode int) {
 func GetSnake() Snake {
 	return Snake{
 		Name: "golang",
+		ID:   "",
 	}
 }

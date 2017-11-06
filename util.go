@@ -122,9 +122,9 @@ func (d Direction) CoordInDirection(coord Coordinate) Coordinate {
 	}
 }
 
-func (m Map) GetSnakeById(snake_id string) *SnakeInfo {
+func (m Map) GetSnakeById(snakeID string) *SnakeInfo {
 	for _, snake := range m.SnakeInfos {
-		if snake.Id == snake_id {
+		if snake.Id == snakeID {
 			return &snake
 		}
 	}
@@ -174,9 +174,10 @@ func (m Map) getTileType(coordinate Coordinate) string {
 	return empty
 }
 
-func (m Map) CanSnakeMoveInDirection(snake_id string, direction Direction) bool {
-	snake := m.GetSnakeById(snake_id)
+func (m Map) CanSnakeMoveInDirection(snakeID string, direction Direction) bool {
+	snake := m.GetSnakeById(snakeID)
 	coord := TranslatePosition(snake.Positions[0], m.Width)
+	coord = direction.CoordInDirection(coord)
 	return m.GetTileAt(coord).IsMovable()
 }
 
