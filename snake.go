@@ -2,6 +2,8 @@ package main
 
 import (
 	log "github.com/sirupsen/logrus"
+	"time"
+	"math/rand"
 )
 
 type Snake struct {
@@ -11,10 +13,24 @@ type Snake struct {
 }
 
 func (snake Snake) GetNextMove(m Map) string {
-	return "DOWN"
+
+	directions := []Direction{Up, Down, Left, Right}
+	var possibleDirections []Direction
+
+	for _, direction := range directions {
+		if m.CanSnakeMoveInDirection(snake.ID, direction) {
+			possibleDirections = append(possibleDirections, direction)
+		}
+	}
+
+	nbrOfDirections := len(possibleDirections)
+	if nbrOfDirections <= 0 {
+		return Down.Name
+	}
+	return possibleDirections[rand.Intn(nbrOfDirections)].Name
 }
 
-func (snake Snake) OnPlayerRegistered(s GameSettings, snakeID string) {
+func (snake *Snake) OnPlayerRegistered(s GameSettings, snakeID string) {
 	snake.GameSettings = s
 	snake.ID = snakeID
 	log.Debug("Player registered.")
@@ -25,6 +41,7 @@ func (snake Snake) OnSnakeDead(reason string) {
 }
 
 func (snake Snake) OnGameStarting() {
+	rand.Seed(time.Now().Unix())
 	log.Debug("All snakes are ready to rock. Game is starting.")
 }
 
