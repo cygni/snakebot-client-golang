@@ -64,7 +64,21 @@ func (c *Connection) connect(host string, port string, venue string) {
 	}
 
 	c.conn = conn
+	c.conn.SetCloseHandler(c.connectionClosed)
 	c.done = make(chan struct{}, 1)
+}
+
+func (c Connection) connectionClosed(code int, text string) error {
+	switch code {
+	case websocket.CloseNormalClosure:
+		fallthrough
+	case websocket.CloseGoingAway:
+		c.logger.Info("Connection closed")
+	default:
+		c.logger.Error("Connection closed unexpectedly", code, text)
+	}
+	c.done <- struct{}{}
+	return nil
 }
 
 func (c *Connection) Start(host string, port string, venue string) {
